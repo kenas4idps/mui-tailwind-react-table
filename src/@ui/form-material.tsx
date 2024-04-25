@@ -1,7 +1,6 @@
-import { FormHelperText, InputLabel } from '@mui/material';
-import FormControl from '@mui/material/FormControl';
-import { Slot } from '@radix-ui/react-slot';
-import * as React from 'react';
+import FormControl from "@mui/material/FormControl";
+import { Slot } from "@radix-ui/react-slot";
+import * as React from "react";
 import {
   Controller,
   ControllerProps,
@@ -10,11 +9,12 @@ import {
   FormProvider,
   FormProviderProps,
   useFormContext,
-} from 'react-hook-form';
+} from "react-hook-form";
+import { cn } from "src/util/cn";
 
 const Form = <
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues extends FieldValues | undefined = undefined
 >({
   children,
@@ -25,7 +25,7 @@ const Form = <
   formRef?: React.Ref<HTMLFormElement>;
   control: Omit<
     FormProviderProps<TFieldValues, TContext, TTransformedValues>,
-    'children'
+    "children"
   >;
 }) => {
   return (
@@ -79,7 +79,7 @@ const useFormField = () => {
   const fieldState = getFieldState(fieldContext.name, formState);
 
   if (!fieldContext) {
-    throw new Error('useFormField should be used within <FormField>');
+    throw new Error("useFormField should be used within <FormField>");
   }
   const id = fieldContext.id;
 
@@ -94,21 +94,45 @@ const useFormField = () => {
   };
 };
 
-const FormItem = (props: React.ComponentProps<typeof FormControl>) => {
+const FormItem = ({
+  className,
+  ...rest
+}: React.ComponentProps<typeof FormControl>) => {
   const { disabled, error } = useFormField();
 
   const hasError = error && !disabled;
 
-  return <FormControl disabled={disabled} error={hasError} {...props} />;
+  return (
+    <FormControl
+      disabled={disabled}
+      error={hasError}
+      className={cn("text-left", className)}
+      {...rest}
+    />
+  );
 };
 
-const FormLabel = (props: React.ComponentProps<typeof InputLabel>) => {
-  const { formItemId } = useFormField();
+const FormLabel = React.forwardRef<
+  React.ElementRef<"label">,
+  React.ComponentPropsWithoutRef<"label">
+>(({ className, ...props }, ref) => {
+  const { formItemId, disabled, error } = useFormField();
+  const hasError = error && !disabled;
 
-  return <label htmlFor={formItemId} {...props} />;
-};
+  return (
+    <label
+      ref={ref}
+      className={cn("", hasError && "text-red-500", className)}
+      htmlFor={formItemId}
+      {...props}
+    />
+  );
+});
 
-const FormMessage = (props: React.ComponentProps<typeof FormHelperText>) => {
+const FormMessage = React.forwardRef<
+  React.ElementRef<"p">,
+  React.ComponentPropsWithoutRef<"p">
+>(({ className, ...props }, ref) => {
   const { formMessageId, disabled, error } = useFormField();
 
   const hasError = error && !disabled;
@@ -119,11 +143,16 @@ const FormMessage = (props: React.ComponentProps<typeof FormHelperText>) => {
   }
 
   return (
-    <FormHelperText id={formMessageId} {...props}>
+    <p
+      ref={ref}
+      className={cn("text-red-500 text-left text-sm", className)}
+      id={formMessageId}
+      {...props}
+    >
       {body}
-    </FormHelperText>
+    </p>
   );
-};
+});
 
 const FormInputControl = React.forwardRef<
   React.ElementRef<typeof Slot>,
