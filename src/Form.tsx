@@ -29,16 +29,10 @@ export const FormSchema = yup.object().shape({
   gender: yup.string().required("gender is required"),
   single: yup.boolean().required("single is required"),
   driveLane: yup.mixed().oneOf(["left", "right"]).required("lane is required"),
-  sideDishes: yup
-    .object()
-    .shape({
-      tomato: yup.boolean(),
-      raddish: yup.boolean(),
-    })
-    .test({
-      message: "At least one side dish must be selected",
-      test: (x) => Object.keys(x).some((k) => x[k] === true),
-    }),
+  sideDishes: yup.object().shape({
+    tomato: yup.boolean(),
+    raddish: yup.boolean(),
+  }),
 });
 
 export type FormSchemaType = yup.InferType<typeof FormSchema>;

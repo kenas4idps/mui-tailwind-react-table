@@ -14,7 +14,7 @@ const columnHelper = createColumnHelper<TableSchemaType>();
 
 // name cell
 function InputCell(props: CellContext<TableSchemaType, unknown>) {
-  const { control, setValue } = useFormContext<FromSchemaType>();
+  const { control } = useFormContext<FromSchemaType>();
 
   const rowIndex = props.row.index;
   const columnId = props.column.id as keyof TableSchemaType;
