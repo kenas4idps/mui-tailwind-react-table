@@ -3,7 +3,7 @@ import "./App.css";
 import FormProviderCaseMaterial from "./Form";
 import MyTable from "./MyTable";
 import { ThemeProvider } from "@mui/material";
-import MyTableForm from "src/components/MyTableForm";
+import MyTableFormA from "src/components/TableFormA";
 import MyTableFormB from "src/components/TableFormB";
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
 
         <MyTable />
 
-        <MyTableForm />
+        <MyTableFormA />
 
         <MyTableFormB />
       </div>

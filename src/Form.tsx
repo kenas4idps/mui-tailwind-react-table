@@ -9,7 +9,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@ui/form-material";
-import { Button } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  FormGroup,
+} from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete/Autocomplete";
 import CustomInput from "@ui/input";
 
@@ -20,6 +27,18 @@ export const FormSchema = yup.object().shape({
     .email("your email is wrong")
     .required("email is required"),
   gender: yup.string().required("gender is required"),
+  single: yup.boolean().required("single is required"),
+  driveLane: yup.mixed().oneOf(["left", "right"]).required("lane is required"),
+  sideDishes: yup
+    .object()
+    .shape({
+      tomato: yup.boolean(),
+      raddish: yup.boolean(),
+    })
+    .test({
+      message: "At least one side dish must be selected",
+      test: (x) => Object.keys(x).some((k) => x[k] === true),
+    }),
 });
 
 export type FormSchemaType = yup.InferType<typeof FormSchema>;
@@ -37,25 +56,104 @@ export const NestedControlledInput = () => {
   // if use control, need to use the generic component FormField
   // and also need to follow this field structure
   return (
-    <FormField
-      control={control}
-      name={"email"}
-      render={({ field }) => {
-        return (
-          <FormItem>
-            {/* <div className="flex items-center"> */}
-            <FormLabel>Email:</FormLabel>
-            {/* <div> */}
-            <FormInputControl>
-              <CustomInput {...field} />
-            </FormInputControl>
-            <FormMessage />
-            {/* </div> */}
-            {/* </div> */}
-          </FormItem>
-        );
-      }}
-    />
+    <>
+      <FormField
+        control={control}
+        name={"email"}
+        render={({ field }) => {
+          return (
+            <FormItem>
+              <FormLabel>Email:</FormLabel>
+              <FormInputControl>
+                <CustomInput {...field} />
+              </FormInputControl>
+              <FormMessage />
+            </FormItem>
+          );
+        }}
+      />
+
+      <FormField
+        control={control}
+        name={"single"}
+        render={({ field }) => {
+          return (
+            <FormItem>
+              <FormLabel>Single:</FormLabel>
+              <FormInputControl>
+                <RadioGroup {...field}>
+                  <FormControlLabel
+                    label={"Yes"}
+                    control={<Radio />}
+                    value={true}
+                  />
+                  <FormControlLabel
+                    label={"No"}
+                    control={<Radio />}
+                    value={false}
+                  />
+                </RadioGroup>
+              </FormInputControl>
+              <FormMessage />
+            </FormItem>
+          );
+        }}
+      />
+
+      <FormField
+        control={control}
+        name={"driveLane"}
+        render={({ field }) => {
+          return (
+            <FormItem>
+              <FormLabel>Drive Lane:</FormLabel>
+              <FormInputControl>
+                <RadioGroup {...field}>
+                  <FormControlLabel
+                    label={"Right"}
+                    control={<Radio />}
+                    value={"right"}
+                  />
+                  <FormControlLabel
+                    label={"Left"}
+                    control={<Radio />}
+                    value={"left"}
+                  />
+                </RadioGroup>
+              </FormInputControl>
+              <FormMessage />
+            </FormItem>
+          );
+        }}
+      />
+
+      <FormField
+        control={control}
+        name={"sideDishes"}
+        render={({ field }) => {
+          return (
+            <FormItem>
+              <FormLabel>Single:</FormLabel>
+              <FormInputControl>
+                <FormGroup>
+                  <FormControlLabel
+                    label={"Tomato"}
+                    control={<Checkbox />}
+                    name={field.name + ".tomato"}
+                  />
+                  <FormControlLabel
+                    label={"Raddish"}
+                    control={<Checkbox />}
+                    name={field.name + ".radish"}
+                  />
+                </FormGroup>
+              </FormInputControl>
+              <FormMessage />
+            </FormItem>
+          );
+        }}
+      />
+    </>
   );
 };
 
@@ -91,6 +189,7 @@ export default function FormProviderCaseMaterial() {
             <FormItem>
               <FormLabel>Gender:</FormLabel>
               <FormInputControl>
+                {/* custom input control implementation */}
                 <Autocomplete
                   options={[
                     {

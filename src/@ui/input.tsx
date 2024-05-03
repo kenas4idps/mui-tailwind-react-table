@@ -1,10 +1,11 @@
 import React from "react";
 import { TextField } from "@mui/material";
+import { cn } from "src/util/cn";
 
 const CustomInput = React.forwardRef<
   React.ElementRef<typeof TextField>,
   React.ComponentPropsWithoutRef<typeof TextField>
->((props, ref) => {
+>(({ className, ...props }, ref) => {
   return (
     <TextField
       ref={ref}
@@ -20,6 +21,9 @@ const CustomInput = React.forwardRef<
         "& .MuiOutlinedInput-notchedOutline": {
           // borderColor: "white",
         },
+      }}
+      classes={{
+        root: cn("base-custom-classname", className),
       }}
       {...props}
     />

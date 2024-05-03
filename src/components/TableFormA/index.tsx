@@ -8,45 +8,39 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Form } from "@ui/form-material";
 import { FormSchema, FromSchemaType } from "./schema";
 import { v4 as uuidv4 } from "uuid";
-import Columns from "src/components/MyTableForm/columns";
+import Columns from "./columns";
 
 const mockData = [
   {
     id: "1",
     name: "John Doe",
-    phone: "123",
-    email: "johndoe@email.com",
-    status: "pending",
+    price: 123,
   },
   {
     id: "2",
     name: "John Doe",
-    phone: "123",
-    email: "johndoe@email.com",
-    status: "success",
+    price: 123,
   },
   {
     id: "3",
     name: "John Doe",
-    phone: "123",
-    email: "johndoe@email.com",
-    status: "failed",
+    price: 123,
   },
 ];
 
 function MyTableForm() {
+  // data should be coming from API
+  // const [data, setData] = useState<TableSchemaType[]>(mockData);
+
   const [isEditable, setIsEditable] = useState(true);
 
   const form = useForm<FromSchemaType>({
     defaultValues: {
-      // mockData should be coming from API or can be passed down from props
-      row: mockData, // because we use form control we have to put default values
+      row: mockData, // because we use form control
     },
+    disabled: !isEditable,
     // form validation by using zod schema
     resolver: yupResolver(FormSchema),
-
-    // 👇 put the disabled value directly on the useForm hook
-    disabled: !isEditable,
   });
 
   const onSubmit = form.handleSubmit((data) => {
@@ -63,19 +57,18 @@ function MyTableForm() {
         id: false,
       },
     },
-    /**
-     * meta is a global context that can be used by each cell
-     */
     meta: {
-      // Implementation of each function may vary depending on use-case
-      // 👇 below are just examples of such implementation
+      isEditable: isEditable,
       deleteRow: (rowId) => {
+        console.log(rowId);
         // the order matters
         // get new data first
         // const newData = data.filter((obj) => obj.id !== rowId);
         const prevData = form.getValues("row") ?? [];
         const newData = prevData.filter((obj) => obj.id !== rowId);
 
+        console.log(prevData);
+        console.log(newData);
         // then set the new data
         // setData(newData);
         form.setValue("row", newData);
@@ -84,15 +77,24 @@ function MyTableForm() {
       addCopyRow: (rowId) => {
         const prevData = form.getValues("row") ?? [];
         const selectedRow = prevData.find((obj) => obj.id === rowId);
+
+        console.log(rowId);
+
         if (!selectedRow) return;
 
+        console.log(prevData);
+        console.log(selectedRow);
+
+        const newId = uuidv4();
         const newData = [
           ...prevData,
           {
             ...selectedRow,
-            id: uuidv4(),
+            id: newId,
           },
         ];
+
+        console.log(newData);
 
         form.setValue("row", newData);
       },
@@ -101,7 +103,7 @@ function MyTableForm() {
 
   return (
     <div className="my-8 border pt-4">
-      <h2>Form Table</h2>
+      <h2>Form Table A</h2>
 
       <div className="flex px-4 mb-4">
         <button
@@ -136,14 +138,11 @@ function MyTableForm() {
                   {
                     id: uuidv4(),
                     name: "",
-                    phone: "",
-                    email: "",
-                    status: "pending",
+                    price: 0,
                   },
                 ];
 
                 form.setValue("row", newData);
-                // setData(newData);
               }}
             >
               add new row
